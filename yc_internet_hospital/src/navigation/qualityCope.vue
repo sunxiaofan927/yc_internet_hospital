@@ -583,6 +583,7 @@ export default {
       this.$api.SendPrescription(data);
     },
     axios(val) {
+      alert(111)
       this.cols = this.cols1;
       this.loading = true;
       let type = this.$store.state.login.user_type;
@@ -599,6 +600,8 @@ export default {
         data.stoptime  = this.dataTime[1] ;
         data.type = type;
         this.$api.dTmpcnManage(data).then((res) => {
+          
+          console.log(res)
           this.tableData = res.data;
           this.total = res.total;
         });

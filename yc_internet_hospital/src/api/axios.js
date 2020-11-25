@@ -66,15 +66,7 @@ ajaxMethod.forEach((method) => {
           if (response.status == 200) {
             let data = response.data;
             if (data.code == '0' || data.code == '403' || data.code == '200') {
-              
               resolve(data)
-              // reject(data)
-              // console.log(reject)
-              // Notification.success({  
-              //   duration:'2000',
-              //   title: '提示',
-              //   message: data.msg||data.message
-              // });
             } else {
               if (data.code == '10100') {
                 Toast({
@@ -95,8 +87,6 @@ ajaxMethod.forEach((method) => {
                 });
                 reject(response)
               }
-              // else { reject("") }
-              // return reject(response)
             }
           } else if (response.status == 5000) {
             router.push("/404")
@@ -113,7 +103,7 @@ ajaxMethod.forEach((method) => {
           }
         })
         .catch(function (error) {
-          Toast(error)
+          // Toast(error)
           return error
         })
     })

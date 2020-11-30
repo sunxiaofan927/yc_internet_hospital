@@ -1,7 +1,7 @@
 <template>
-  <div class="signLogin" @touchmove.prevent>
-    <el-form class="signLoginBg">
-      <el-form-item> 签章登录/login </el-form-item>
+  <div class="signLogin" id="aa" @touchmove.prevent>
+    <el-form class="signLoginBg" v-show="this.jumpType === 1">
+      <el-form-item>签章登录/login</el-form-item>
       <el-form-item>
         <el-input placeholder="用户名" v-model="userName">
           <i
@@ -37,12 +37,38 @@ let md5_ = md5(md5("yc1805_jz_gluce") + formData_); //加密规则
 export default {
   data() {
     return {
+      jumpType: 2,
       userName: "",
       userPwd: "",
-      type:'password',
+      type: "password",
     };
   },
+  created() {
+    this.$nextTick(() => {
+      this.isWeixinBrowser();
+    });
+  },
   methods: {
+    isWeixinBrowser() {
+      let ua = navigator.userAgent.toLowerCase();
+      let signLogin = document.getElementById("aa");
+      console.log(signLogin.style);
+      if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        signLogin.style.display = "none";
+        this.$alert("请点击右上角选择手机自带浏览器打开进行签章", {
+          confirmButtonText: "确定",
+        });
+        return false;
+      } else if (typeof WeixinJSBridge !== "undefined") {
+        signLogin.style.display = "none";
+        this.$alert("请点击右上角选择手机自带浏览器打开进行签章", {
+          confirmButtonText: "确定",
+        });
+        return false;
+      } else {
+        this.jumpType = 1;
+      }
+    },
     clear() {
       this.userName = "";
     },

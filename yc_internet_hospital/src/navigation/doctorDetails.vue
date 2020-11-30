@@ -703,15 +703,14 @@ import AnimateFly from '@/components/animate.vue';
             setTimeout(()=>{
               this.$router.push('/doctorCheck')
             },1000)
-              // if(val=='1'){  //更换为手签  添加
-              //   let data = {
-              //     userId:this.form.docid,//用户ID
-              //     name:this.form.nickname,//姓名
-              //     idcard:this.form.idcard,//身份证号
-              //   };
-              //   this.addPersonalAcct(data)
-                
-              // }
+              if(val=='1'){  //更换为手签  添加
+                let data = {
+                  userId:this.form.docid,//用户ID
+                  name:this.form.nickname,//姓名
+                  idcard:this.form.idcard,//身份证号
+                };
+                this.addPersonalAcct(data)
+              }
             });
       },
       // submit(photo){ //提交审核

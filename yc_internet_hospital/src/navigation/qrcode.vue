@@ -2,8 +2,13 @@
   <div class="container">
     <p ref="qrCodeUrl" class="qrCode"></p>
     <p class="qrCode">请扫描二维码上传签章</p>
-    <p class="qrCode">或访问此链接进行签章:http://192.168.2.24:88/#/signLogin</p>
-    <p class="warning">请将此链接或二维码保存发给药师,此链接仅用于药师签章!!!</p>
+    <p class="qrCode">
+      或访问此链接进行签章:http://192.168.2.24:88/#/signLogin
+    </p>
+    <p class="warning">请确保医师已经添加成功!!!</p>
+    <p class="warning">
+      请将此链接或二维码保存发给药师,此链接仅用于药师签章!!!
+    </p>
     <!-- <p class="warning">拿出手机，打开微信扫一扫</p> -->
     <el-button type="danger" @click="addPhar">返回</el-button>
   </div>
@@ -16,7 +21,7 @@ export default {
   data() {
     return {
       closeTk: true,
-    }
+    };
   },
   methods: {
     creatQrCode() {
@@ -31,8 +36,8 @@ export default {
     },
     addPhar() {
       this.closeTk = false;
-      this.$emit('closeDialog',this.closeTk)
-    }
+      this.$emit("closeDialog", this.closeTk);
+    },
   },
   mounted() {
     this.creatQrCode();
@@ -48,7 +53,7 @@ export default {
   justify-content: center;
   flex-flow: column nowrap;
   align-items: center;
-  .warning{
+  .warning {
     color: #ed1941;
   }
 }

@@ -367,7 +367,7 @@
             </div>
           </div>
           <div class="sealContainer" v-show="this.isImage">
-            <span>药师签章:</span>
+            <span>审方药师:</span>
             <div class="sealList">
               <!-- <img
                 class="imgup"
@@ -388,7 +388,7 @@
                 "
                 alt=""
                 srcset=""
-                title="药师签章"
+                title="审方药师"
               />
             </div>
           </div>
@@ -415,7 +415,7 @@
                 "
                 alt=""
                 srcset=""
-                title="药师签章"
+                title="复核药师"
               />
             </div>
           </div>

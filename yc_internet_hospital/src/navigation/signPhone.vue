@@ -12,9 +12,6 @@
       <el-button type="primary" @click="downloadResult()">去提交</el-button>
       <el-button @click="clear()">清空</el-button>
     </div>
-    <!-- <el-dialog :visible="dialogVisible" width="100%" top="-20px"> -->
-
-    <!-- </el-dialog> -->
   </div>
 </template>
 
@@ -282,9 +279,6 @@ export default {
                       idcard: signData.data.data1.doctor_idcard, //身份证号
                     };
                     let data = self.$qs.stringify(data_);
-                    //return api.post("/esign/addPersonalAcct.do?",data);
-                    // self.addPersonalAcct(data);
-                    // self.$message.success(res.data.msg);
                     self.$axios
                       .post(
                         "http://192.168.2.24:88/api/esign/addPersonalAcct.do?",

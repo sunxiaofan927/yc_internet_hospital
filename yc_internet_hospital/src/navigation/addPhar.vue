@@ -193,27 +193,23 @@
         </el-upload>
       </div>
       <div class="Index_flex_2">
-        <img src="" alt="">
+        <img src="" alt="" />
       </div>
       <div class="div_">
-        <el-button type="warning" class="btn_save" @click="huizhichange"
-          >{{ typeClick == "0" ? "修改" : "" }}签名</el-button
-        >
         <el-button type="primary" class="btn_save" @click="submit">{{
           typeClick == "0" ? "保存" : "添加"
         }}</el-button>
-        <el-button class="btn_save" @click="reject">驳回</el-button>
+        <el-button type="warning" class="btn_save" @click="huizhichange"
+          >{{ typeClick == "0" ? "修改" : "" }}签名</el-button
+        >
+        <!-- <el-button class="btn_save" v-show="typeClick == 1" @click="reject">驳回</el-button> -->
       </div>
     </div>
     <AnimateFly
       class="showFly1 animate-bounce-up point"
       title="点击回退"
     ></AnimateFly>
-    <el-dialog
-      custom-class="addSign"
-      :visible="dialogVisiblehuizhi"
-      center
-    >
+    <el-dialog custom-class="addSign" :visible="dialogVisiblehuizhi" center>
       <qr-code @closeDialog="closeDialog1"></qr-code>
     </el-dialog>
     <!-- <el-dialog
@@ -395,14 +391,13 @@ export default {
       };
       //药师详情
       this.$api.pInfo(data).then((res) => {
-        console.log(res)
         this.form = res.data;
-        this.imgFun(res.data);console.log()
+        this.imgFun(res.data);
+        console.log();
       });
     },
     submit() {
       let data = this.form;
-      console.log(data)
       let TEL_REGEXP = /^1([38]\d|5[0-35-9]|7[3678])\d{8}$/;
       if (
         data.user_account == "" ||
@@ -455,10 +450,11 @@ export default {
         ) {
           data["pharmacist_idcard_url" + (i + 1)] = fileListIdcard[i].url;
         } else {
-          data["pharmacist_idcard_url" + (i + 1)] = "null";
+          // data["pharmacist_idcard_url" + (i + 1)] = "null";
+          data["pharmacist_idcard_url" + (i + 1)] = "";
         }
       }
-      for (var i = 0; i < 2; i++) {
+      for (var i = 0; i < 6; i++) {
         if (
           fileListDoctor[i] != undefined &&
           fileListDoctor[i] != null &&
@@ -468,7 +464,8 @@ export default {
           data["pharmacist_qualification_url" + (i + 1)] =
             fileListDoctor[i].url;
         } else {
-          data["pharmacist_qualification_url" + (i + 1)] = "null";
+          // data["pharmacist_qualification_url" + (i + 1)] = "null";
+          data["pharmacist_qualification_url" + (i + 1)] = "";
         }
       }
       if (this.$store.state.login.user_type == "4") {
@@ -487,7 +484,13 @@ export default {
             mobile: this.form.user_account,
           };
           this.$api.pManage(data).then((res) => {
-            this.addPersonalAcct(res.data[0]);
+            if (this.typeClick == 1) {
+              this.addPersonalAcct(res.data[0]);
+            } else if (this.typeClick == 0){
+              setTimeout(() => {
+                this.$router.push("/pharmacist");
+              }, 1000);
+            }
           });
         });
     },
@@ -497,11 +500,17 @@ export default {
         name: val.pharmacist_nickname,
         idcard: val.pharmacist_idcard,
       };
-      this.$api.addPersonalAcct(data).then(() => {
-        setTimeout(() => {
-          this.$router.push("/pharmacist");
-        }, 1000);
-      });
+      this.$api
+        .addPersonalAcct(data)
+        .then(() => {
+          this.$message.success("请将签名二维码发送至药师,进行手签");
+          setTimeout(() => {
+            this.$router.push("/pharmacist");
+          }, 1000);
+        })
+        .catch((res) => {
+          this.$message.error("身份证号码验证错误,请校验");
+        });
     },
     reject() {
       let data = {

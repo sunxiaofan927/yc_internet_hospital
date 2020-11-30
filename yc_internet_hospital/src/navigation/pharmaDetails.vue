@@ -298,7 +298,7 @@ export default {
       };
       this.$api.pInfo(data).then((res) => {
         this.form = res.data;
-      });s
+      });
     },
     imgL(val) {
       this.dialogFormVisibleT = true;

@@ -39,9 +39,9 @@
             </el-option>
           </el-select>
         </div>
-        <div class="flex_1" v-if="typeV == '1'">
+        <!-- <div class="flex_1" v-if="typeV == '1'">
           <span class="title">审核状态</span>
-          <!-- <span class="title">状态</span> -->
+           <span class="title">状态</span>
           <el-select v-model="data_.status" placeholder="请选择">
             <el-option
               v-for="item in options"
@@ -51,7 +51,7 @@
             >
             </el-option>
           </el-select>
-        </div>
+        </div> -->
         <div class="flex_1 flex pad_ pad_r Index_flex_">
           <span class="title">日期</span>
           <el-date-picker
@@ -360,7 +360,7 @@
             </div>
           </div>
           <div class="signContainer" v-show="isImage">
-            <span>药师签章:</span>
+            <span>审方药师:</span>
             <div class="signRight">
               <!-- <img
                 class="imgup_buttom"
@@ -524,7 +524,7 @@ export default {
         mobile: "", //用户手机号
         docname: "", //医师
         username: "", //患者
-        status: "", //审核状态
+        // status: "", //审核状态
       },
       dataTime: "",
       p_number: "", //处方号
@@ -687,8 +687,6 @@ export default {
       data.stoptime = this.dataTime[1];
       (data.type = type),
         this.$api.dTmpcnManage(data).then((res) => {
-          // alert(1)
-          console.log(res)
           this.tableData = res.data;
           this.total = res.total;
         });

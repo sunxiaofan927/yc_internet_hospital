@@ -88,7 +88,7 @@ import Qs from 'qs';
                 .then(res => {
                   // console.log(res.data.user_type)
                     if(res.code=='0'){
-                      console.log(res)
+                      
                         this.$store.dispatch("login",res.data);
                         sessionStorage.setItem('user_type',res.pharmacist_type);
                         this.user_type = res.data.user_type;
@@ -96,6 +96,7 @@ import Qs from 'qs';
                         sessionStorage.setItem(Base64.encode('go'),Base64.encode(res.data.user_deanid))
                         this.$store.dispatch("updateCheck",res.data.user_deanid);
                         this.$store.dispatch("token",res.data.access_token);
+                        // console.log(this.$store.commit.token)
                         sessionStorage.setItem("qrcodePhone",res.data.access_token)
                         this.others(res.data.access_token,res.data.user_deanid,res.data.user_type);
                         this.TimeOut();

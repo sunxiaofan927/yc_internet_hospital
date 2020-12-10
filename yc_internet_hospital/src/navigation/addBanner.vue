@@ -126,6 +126,18 @@ export default {
                 this.data_.banner_picture= res.icon; // 请求成功之后赋给头像的URL
             }
             });
+            // let data_ = {
+            //   filestr:res,
+            // };
+            // let data = this.$qs.stringify(data_);
+            // this.$axios
+            //     .post(
+            //       "http://192.168.2.20:80/api/PatientController/file_upload1.do?type=1",
+            //       data
+            //     )
+            //     .then((res) => {
+            //       console.log(res)
+            //     });
         },
         getaddress(){
             let data ={

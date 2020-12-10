@@ -600,8 +600,7 @@ export default {
         data.stoptime  = this.dataTime[1] ;
         data.type = type;
         this.$api.dTmpcnManage(data).then((res) => {
-          
-          console.log(res)
+
           this.tableData = res.data;
           this.total = res.total;
         });

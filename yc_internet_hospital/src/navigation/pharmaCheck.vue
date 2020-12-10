@@ -136,8 +136,10 @@ import bus from '../components/bus';
        },
        deleteRow(data,val){
         //  console.log(data,val)
+         console.log(data)
          switch (val){
           case 0:
+               sessionStorage.setItem("pharmacistsID",data.pharmacist_id);
                this.$store.dispatch("update",data)
                this.$router.push("/pharmaDetails")
                bus.$emit("path","/pharmaCheck")

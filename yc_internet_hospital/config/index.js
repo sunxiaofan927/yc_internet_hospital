@@ -16,6 +16,7 @@ module.exports = {
         // target: "http://192.168.2.38:80/yc_internet_hospital_api",
         // target: "http://192.168.2.211:8080/yc_internet_hospital_api",
         // target: "http://192.168.2.211:8080/yc_internet_hospital_api",
+        // target: "http://192.168.2.20:80/yc_internet_hospital_api",
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/'

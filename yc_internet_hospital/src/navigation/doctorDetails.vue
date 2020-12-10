@@ -728,10 +728,12 @@ import AnimateFly from '@/components/animate.vue';
       // },
       addPersonalAcct(val){
         // console.log(val,"123")
+        // let deanid = Base64.decode(sessionStorage.getItem(Base64.encode('go')));
         let data = {
           userId:val.userId,
           name:val.name,
           idcard:val.idcard,
+          // deanid:deanid,
         };
         this.$api.addPersonalAcct(data)
       },

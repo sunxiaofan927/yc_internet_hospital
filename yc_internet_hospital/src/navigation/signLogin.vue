@@ -3,7 +3,7 @@
     <el-form class="signLoginBg" v-show="this.jumpType === 1">
       <el-form-item>签章登录/login</el-form-item>
       <el-form-item>
-        <el-input placeholder="用户名" v-model="userName">
+        <el-input placeholder="请输入手机号" v-model="userName">
           <i
             slot="suffix"
             class="el-input__icon el-icon-circle-close"
@@ -11,14 +11,20 @@
           ></i>
         </el-input>
       </el-form-item>
-      <el-form-item>
-        <el-input placeholder="密码" v-model="userPwd" :type="type">
+      <!-- <el-form-item>
+        <el-input placeholder="密码" v-model="verification" :type="type">
           <i
             slot="suffix"
             class="el-input__icon el-icon-view"
             @click="look"
           ></i>
         </el-input>
+      </el-form-item> -->
+      <el-form-item class="verification">
+        <el-input placeholder="验证码" v-model="verification">
+        </el-input>
+        <el-button v-show="show" @click="getCode">获取验证码</el-button>
+        <el-button v-show="!show" class="count">{{ count }}(s)</el-button>
       </el-form-item>
       <el-form-item>
         <el-button @click="Submit">登录</el-button>
@@ -32,15 +38,17 @@ import html2canvas from "html2canvas";
 import formData from "../../static/js/formDate.js";
 let formData_ = formData.formDate();
 import md5 from "js-md5";
-let md5_ = md5(md5("yc1805_jz_gluce") + formData_); //加密规则
+let md5_ = md5(formData_ + md5("Yc_eM_ykY")); //加密规则
 
 export default {
   data() {
     return {
       jumpType: 2,
       userName: "",
-      userPwd: "",
-      type: "password",
+      verification: "",
+      show: true,
+      count: "",
+      timer: null,
     };
   },
   created() {
@@ -49,10 +57,36 @@ export default {
     });
   },
   methods: {
+    getCode() {
+      let TEL_REGEXP = /^1([38]\d|5[0-35-9]|7[3678])\d{8}$/;
+      if (!TEL_REGEXP.test(this.userName)) {
+        this.$message("请输入正确手机号格式");
+        return;
+      }
+      let data = {
+        yc_key:md5_,
+        phone: this.userName,
+      };
+      this.$api.MobileSend(data).then((res) => {
+        const TIME_COUNT = 60;
+        if (!this.timer) {
+          this.count = TIME_COUNT;
+          this.show = false;
+          this.timer = setInterval(() => {
+            if (this.count > 0 && this.count <= TIME_COUNT) {
+              this.count--;
+            } else {
+              this.show = true;
+              clearInterval(this.timer);
+              this.timer = null;
+            }
+          }, 1000);
+        }
+      });
+    },
     isWeixinBrowser() {
       let ua = navigator.userAgent.toLowerCase();
       let signLogin = document.getElementById("aa");
-      console.log(signLogin.style);
       if (ua.match(/MicroMessenger/i) == "micromessenger") {
         signLogin.style.display = "none";
         this.$alert("请点击右上角选择手机自带浏览器打开进行签章", {
@@ -81,35 +115,31 @@ export default {
     },
     Submit() {
       if (!this.userName) {
-        this.$message.error("账号不能为空");
+        this.$message.error("手机号不能为空");
         return;
       }
-      if (!this.userPwd) {
-        this.$message.error("密码不能为空");
+      if (!this.verification) {
+        this.$message.error("请输入验证码");
         return;
       }
-      let data_ = {
-        yc_key: md5_,
+      let data = {
+        verification: this.verification,
         account: this.userName,
-        pwd: this.userPwd,
-      };
-      let data = this.$qs.stringify(data_);
-      this.$axios
-        .post(
-          "http://192.168.2.24:88/api/dataController/loginByAccountAndPwdToH5.do?",
-          data
-        )
-        .then((res) => {
-          if (res.data.code == 0) {
-            this.$axios.defaults.headers.common["access-token"] =
-              res.data.access_token;
-            // sessionStorage.setItem("signId", res.data.data.id);
+      }
+      this.$api.signLoginH5(data).then((res) =>{
+            // this.$store.dispatch("signToken",res.access_token);
+            // let signToken = this.$store.state.signToken;
+            // this.$axios.defaults.headers.common["access-token"] = signToken;
+            //   console.log(signToken)
+              this.$store.dispatch("token",res.access_token);
+              // let token = this.$store.state.token;
+              // this.$axios.defaults.headers.common["access-token"] = token;
+              console.log(this.$axios.defaults.headers)
             sessionStorage.setItem("signId", JSON.stringify(res));
             this.$router.push({ path: "/signPhone" });
-          } else {
-            this.$message.error(res.data.msg);
-          }
-        });
+      }).catch(res =>{
+        this.$message.error(res.msg)
+      })
     },
   },
 };
@@ -117,53 +147,55 @@ export default {
 
 <style scoped lang="scss">
 .signLogin {
-  background: url("../assets/img/login.png") center no-repeat;
   display: flex;
   justify-content: space-around;
   align-items: center;
   height: 100%;
+  background: url("../assets/img/login.png") center no-repeat;
   .signLoginBg {
+    // background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 60, 0.2);
+    border-radius: 30px;
     width: 50%;
-    height: 40%;
-    padding: 0 0.5rem;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 0.4rem;
-    color: #ffffff;
+    height: 30%;
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-around;
     align-items: center;
     .el-form-item {
-      width: 100%;
-      margin: 0;
-      height: 20%;
+      width: 90%;
+      color: #fff;
+      font-size: 0.5rem;
+      text-align: center;
+      .el-button {
+        height: 60%;
+        border: 0;
+        color: #ffffff;
+        width: 80%;
+        background: rgba(0, 0, 60, 0.3);
+      }
+      & >>> .el-input {
+        .el-input__inner {
+          color: #ffffff;
+          border: 0;
+          background: rgba(0, 0, 60, 0.3);
+        }
+      }
+    }
+    .verification {
       & >>> .el-form-item__content {
-        font-size: 0.5rem;
-        width: 100%;
+        // background: red;
         display: flex;
-        flex-flow: column nowrap;
-        justify-content: center;
         align-items: center;
-        height: 100%;
+        justify-content: space-between;
         .el-input {
-          width: 90%;
-          height: 100%;
+          text-align: left;
           .el-input__inner {
-            height: 60%;
+            width: 75%;
             color: #ffffff;
             border: 0;
             background: rgba(0, 0, 60, 0.2);
           }
-        }
-        .el-input__suffix {
-          height: 60%;
-        }
-        .el-button {
-          height: 60%;
-          border: 0;
-          color: #ffffff;
-          width: 80%;
-          background: rgba(0, 0, 60, 0.3);
         }
       }
     }

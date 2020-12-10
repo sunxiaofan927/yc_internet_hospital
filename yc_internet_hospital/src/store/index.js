@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 export default new Vuex.Store({
   state:{
-
+    signToken:"",
     json:{},
     login:{},
     type:'0',//0 为修改 1 为添加
@@ -20,6 +20,9 @@ export default new Vuex.Store({
   mutations:{
     token(state,edoit){
       state.token= edoit||sessionStorage.getItem(Base64.encode("token"));
+    },
+    signToken(state,edoit) {
+      state.signToken= edoit||sessionStorage.getItem(Base64.encode("signToken"));
     },
     updateCheck(state,edoit){
       state.Check= edoit||Base64.decode(JSON.parse(sessionStorage.getItem(Base64.encode("Check"))));
@@ -65,6 +68,12 @@ export default new Vuex.Store({
       sessionStorage.setItem(Base64.encode("token"),data);
       return new Promise((resolve, reject) => {
         commit("token",data);
+      })
+    }, //sign
+    signToken({ commit }, data) {
+      sessionStorage.setItem(Base64.encode("signToken"),data);
+      return new Promise((resolve, reject) => {
+        commit("signToken",data);
       })
     },
     updateCheck({ commit }, data) {

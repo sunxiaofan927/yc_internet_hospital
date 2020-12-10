@@ -132,7 +132,6 @@
           >
             <template slot-scope="scope">
               <!-- 偏差結果 -->
-
               <span v-if="col.prop === 'p_type'">
                 {{ scope.row[col.prop] == "1" ? "普通药方" : "非普通药方" }}
               </span>
@@ -178,14 +177,14 @@
                 查看
               </el-button>
               <el-button
-                v-show="Type == 9"
+                v-show="Type == 9 || Type == 4"
                 @click.native.prevent="show(scope.row, 3)"
                 type="text"
                 size="small"
               >
                 打印
               </el-button>
-              <el-button
+              <!-- <el-button
                 type="text"
                 size="small"
                 @click="getPrip(scope.row, userType)"
@@ -197,7 +196,7 @@
                     }}
                   </span>
                 </template>
-              </el-button>
+              </el-button> -->
             </template>
           </el-table-column>
         </el-table>
@@ -428,6 +427,10 @@
           >使用</el-button
         >
       </div>
+      <div slot="footer" class="dialog-footer" v-show="showPull">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="getPrip">拉取处方</el-button>
+      </div>
     </el-dialog>
     <el-dialog title="图片" :visible.sync="dialogTableVisibleImg">
       <div style="text-align: center">
@@ -455,6 +458,7 @@ import resumeMenu from "@/navigation/resumeMenu.vue";
 export default {
   data() {
     return {
+      showPull: false,
       dialogVisibleWEN: false,
       show_Print: false,
       dataIframe: {},
@@ -479,7 +483,7 @@ export default {
       cols1: [
         { prop: "p_number", label: "处方号", width: "300" },
         { prop: "user_mobile", label: "手机号" },
-        { prop: "p_instime", label: "处方时间", width: "" },
+        { prop: "p_instime", label: "处方时间", width: "150" },
         { prop: "p_price", label: "问诊价格", width: "" },
         { prop: "p_state", label: "审核状态", width: "" },
         { prop: "p_status", label: "核销状态", width: "" },
@@ -611,6 +615,10 @@ export default {
       if (val == 1) {
         this.disabled = true;
         this.list_1 = true;
+        let a = this.$store.state.login.user_type;
+        if (a == 3) {
+          this.showPull = true;
+        }
         this.p_number = data.p_number;
         this.userPrescriptionInfo(this.p_number);
       } else if (val == 2) {
@@ -618,13 +626,17 @@ export default {
         this.list_1 = true;
         this.userPrescriptionInfo(this.p_number);
       } else {
-        this.show_Print = false;
-        this.dialogVisibleWEN = true;
-        this.p_number = data.p_number;
-        this.userPrescriptionInfo2(data);
-        setTimeout(() => {
-          this.show_Print = true;
-        }, 2000);
+        if (data.p_state == 1) {
+          this.show_Print = false;
+          this.dialogVisibleWEN = true;
+          this.p_number = data.p_number;
+          this.userPrescriptionInfo2(data);
+          setTimeout(() => {
+            this.show_Print = true;
+          }, 2000);
+        } else {
+          this.$message.error("请先完成处方审核,在进行打印");
+        }
       }
     },
     userPrescriptionInfo(val) {
@@ -656,8 +668,8 @@ export default {
       };
       this.$api.userPrescriptionInfo(data).then((res) => {
         // if (res.code == "0") {
-          this.dataIframe = res.data;
-          this.dataIframe.status_ = val.p_status;
+        this.dataIframe = res.data;
+        this.dataIframe.status_ = val.p_status;
         // }
       });
     },
@@ -761,32 +773,36 @@ export default {
         p_mid: this.$store.state.login.userid,
       };
       this.$api.prescriptionStateup(data).then((res) => {
-        if (this.$store.state.login.user_type == "4") {
-          this.SendPrescription(this.p_number);
-        }
+        // if (this.$store.state.login.user_type == "4") {
+        //   this.SendPrescription(this.p_number);
+        // }
         this.axios(1);
         this.dialogFormVisible = false;
       });
     },
     //处方拉取
-    getPrip(row, val) {
+    getPrip() {
+      // console.log(this.details)
+      let val = sessionStorage.getItem("user_type");
+      console.log(val);
       let data = {};
       if (val == 1) {
         data.pid = this.$store.state.ID.userid;
-        data.p_number = row.p_number;
+        data.p_number = this.details.prescriptionManageBean.p_number;
       } else if (val == 2) {
         data.rid = this.$store.state.ID.userid;
-        data.p_number = row.p_number;
+        data.p_number = this.details.prescriptionManageBean.p_number;
       }
-
-      this.$api.pullPrip(data).then((res) => {
-        if (res.code == 0) {
+      this.$api
+        .pullPrip(data)
+        .then((res) => {
+          this.dialogFormVisible = false;
           this.axios(0);
           this.$message.success(res.msg);
-        } else {
+        })
+        .catch((res) => {
           this.$message.error(res.msg);
-        }
-      });
+        });
     },
   },
 };

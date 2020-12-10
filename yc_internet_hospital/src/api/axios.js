@@ -13,15 +13,15 @@ const service = axios.create({
   baseURL: 'api',  //线上
   // baseURL: 'http://internet.api.yicheng120.com:800/',
   //  baseURL: 'https://api.ycyun120.com:1443',  //线上
-  // baseURL: 'http://test.api.ycyun120.com',  //线上测试
-  timeout: 10000,
+  // baseURL: 'https://api.ycyun120.com/',  //线上
+  timeout: 20000,
   transformRequest: [function (data) {//请求预处理函数
     let code = Base64.decode(sessionStorage.getItem(Base64.encode('go')));
     let num = 0;
     if (code != 'ée') {
       var fun = setInterval(function () {
         num++;
-        code = Base64.decode(sessionStorage.getItem(Base64.encode('go')));
+        code = Base64.decode(sessionStorage.getItem(Base64.encode('go')))
         if (code != 'ée') {
           clearInterval(fun);
         }
@@ -30,6 +30,7 @@ const service = axios.create({
         }
       }, 500)
     }
+    // console.log(data)
     data.deanid = code;
     return Qs.stringify(data)
   }],

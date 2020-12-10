@@ -1,6 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { Base64 } from 'js-base64'
+
+Vue.prototype.$Base64 = Base64;
 Vue.use(Router)
+
+// console.log(Vue.$store)
+
+
+// let json = this.$store.state.login ;
+// console.log(json)
+
+// let a = Base64.decode(JSON.parse(sessionStorage.getItem(Base64.encode("login")))) ;
 
 export default new Router({
   routes: [
@@ -231,7 +242,10 @@ export default new Router({
             component: resolve => require(['@/navigation/qrcode.vue'], resolve),
             // meta: { title: '复核药师' }
           }, //signPhone
-          
+          {
+            path: '/adminUser',
+            component: resolve => require(['@/navigation/admin/safety/user'], resolve),
+          }
       ]
     },
     {

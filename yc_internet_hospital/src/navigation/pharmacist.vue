@@ -187,7 +187,7 @@ export default {
         { prop: "id", label: "序号" },
         { prop: "pharmacist_icon", label: "照片" },
         { prop: "pharmacist_nickname", label: "姓名" },
-        { prop: "pharmacist_mid", label: "医师编号" },
+        // { prop: "pharmacist_mid", label: "医师编号" },
         { prop: "pharmacist_gender", label: "性别" },
         { prop: "pharmacist_hospital", label: "所属医院" },
         { prop: "pharmacist_type", label: "药师类型" },

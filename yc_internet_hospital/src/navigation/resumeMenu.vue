@@ -227,7 +227,6 @@ export default {
   mounted() {},
   watch: {
     dataIframe(val) {
-      console.log(val);
       this.srcPrint = "";
       this.json = val;
       if (val.status_ == "2") {

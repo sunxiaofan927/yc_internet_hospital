@@ -3,7 +3,7 @@
     <p ref="qrCodeUrl" class="qrCode"></p>
     <p class="qrCode">请扫描二维码上传签章</p>
     <p class="qrCode">
-      或访问此链接进行签章:http://192.168.2.24:88/#/signLogin
+      或访问此链接进行签章:https://www.ycyun120.com/#/signLogin
     </p>
     <p class="warning">请确保医师已经添加成功!!!</p>
     <p class="warning">
@@ -26,7 +26,7 @@ export default {
   methods: {
     creatQrCode() {
       let qrcode = new QRCode(this.$refs.qrCodeUrl, {
-        text: "http://192.168.2.24:88/#/signLogin",
+        text: "https://www.ycyun120.com/#/signLogin",
         width: 100,
         height: 100,
         colorDark: "#000000",

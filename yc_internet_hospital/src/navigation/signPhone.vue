@@ -41,26 +41,10 @@ export default {
     };
   },
   mounted() {
-    // this.dialogVisible = true;
-    // this.canvas = this.$refs.canvas;
-    // canvas.height = this.$refs.canvasF.offsetHeight + 10;
-    // canvas.width = this.$refs.canvasF.offsetWidth;
-    // this.canvasTxt = this.canvas.getContext("2d");
-    // console.log(this.canvasTxt)
-    // this.canvasTxt.strokeStyle = this.color;
-    // this.canvasTxt.lineWidth = this.linewidth;
-    // this.$nextTick().then(() => {
-    // this.canvas = this.$refs.canvas;
-    // this.ctx = this.canvas.getContext("2d");
-    // console.log(this.ctx);
-    // // this.ctx.lineWidth = '40';
-    // this.ctx.strokeStyle = this.color;
-    // this.ctx.stroke();
     // 监听横竖屏切换事件
     this.mql = window.matchMedia("(orientation: portrait)");
     this.mql.addListener(this.handleOrientationChange);
     this.handleOrientationChange();
-    // });
   },
   beforeDestroy() {
     this.mql.removeListener(this.handleOrientationChange);
@@ -68,7 +52,7 @@ export default {
   methods: {
     handleOrientationChange() {
       let a = this.$refs.layer;
-      a.style.height = "180px";
+      a.style.height = "80%";
       if (!this.mql.matches) {
         this.canvas = this.$refs.canvas;
         this.canvas.width = this.$refs.layer.clientWidth - 40;
@@ -77,32 +61,10 @@ export default {
         this.ctx.lineWidth = "5";
         this.ctx.strokeStyle = this.color;
         this.ctx.stroke();
-        // let stageInfo = this.canvas.getBoundingClientRect();
-        // this.startX = stageInfo.left;
-        // this.startY = stageInfo.top;
-        // canvas画布，当改变画布的长度或者宽度时，画布的内容会消失
-        // 解决方案1：把变化之前的画布内容copy一份，然后重新画到画布上
-        // const imgData = this.ctx.getImageData(
-        //   0,
-        //   0,
-        //   this.canvas.width,
-        //   this.canvas.height
-        // );
-        // this.canvas.width = this.$refs.layer.clientWidth - 40;
-        // this.canvas.height = this.$refs.layer.clientHeight - 100;
-        // this.ctx.putImageData(imgData, 0, 0);
       } else {
         this.ctx = "";
         alert("请将手机横屏进行签名");
       }
-      // 解决方案2：创建一个新的canvas，把变化之前的画布内容copy到新canvas上，再把新canvas绘制到变化后的canvas上
-      // const nc = document.createElement('canvas')
-      // nc.width = this.canvas.width;
-      // nc.height = this.canvas.height;
-      // nc.getContext('2d').drawImage(this.canvas, 0, 0);
-      // this.canvas.width = this.$refs.layer.clientWidth - 40
-      // this.canvas.height = this.$refs.layer.clientHeight - 100
-      // this.ctx.drawImage(nc, 0, 0);
     },
     touchStart(event) {
       this.ctx.beginPath();
@@ -122,13 +84,6 @@ export default {
       this.ctx.closePath();
       this.isSign = true;
     },
-    // submit() {
-    //     if (!this.isSign) {
-    //         this.$Message.error('您还未签名！')
-    //         return
-    //     }
-    //     this.$emit('sign', this.canvas.toDataURL('image/png', 1))
-    // },
     getBase64(file) {
       //base64 格式装换
       return new Promise(function (resolve, reject) {
@@ -159,8 +114,6 @@ export default {
       return new Blob([u8arr], { type: mime });
     },
     downloadResult(name) {
-      // let token = sessionStorage.getItem("qrcodePhone");
-      // alert(token);
       let that = this;
       let canvasID = document.querySelector("#capture_");
       let a = document.createElement("a");
@@ -173,28 +126,15 @@ export default {
         that.getBase64(blob).then((res) => {
           this.touMing(res, this.urlBase64);
         });
-        //图片下载
-        // a.setAttribute("href", URL.createObjectURL(blob));
-        // a.setAttribute("download", name + ".jpg")
-        // document.body.appendChild(a);
-        // a.click();
-        // URL.revokeObjectURL(blob);
-        // document.body.removeChild(a);
       });
     },
     urlBase64(res) {
-      // this.$parent.$parent.callBackUrl("data:image/bmp;base64,"+res)
       let image = null;
       this.baseImg = "data:image/bmp;base64," + res;
     },
     addPersonalAcct(data) {
-      // console.log(val,"123")
-      // let data = {
-      //   userId: val.userId,
-      //   name: val.name,
-      //   idcard: val.idcard,
-      // };
-      alert("气死我了");
+      // let deanid = Base64.decode(sessionStorage.getItem(Base64.encode('go')));
+      // data.deanid = deanid;
       this.$api.addPersonalAcct(data).then((res) => {
         if (res.code == 0) {
           self.$router.push({ path: "/signLogin" });
@@ -206,8 +146,6 @@ export default {
       var base64Img = document.createElement("base64Img"),
         canvas = this.$refs.canvas,
         context = canvas.getContext("2d");
-      // context.strokeStyle = "red";
-      // context.stroke();
       // 创建新图片
       var img = new Image();
       img.src = dataImg;
@@ -242,57 +180,44 @@ export default {
             let signJSON = sessionStorage.getItem("signId");
             let signData = JSON.parse(signJSON);
             let ImgBase64 = self.baseImg.substring(22, self.baseImg.length);
-            let data_ = {
-              userid: signData.data.data.id,
-              yc_key: md5_,
+            let data = {
+              userid: signData.data.id,
               sign: ImgBase64,
             };
-            let data = self.$qs.stringify(data_);
-            if (signData.data.data.user_type == 3) {
-              self.$axios
-                .post(
-                  "http://192.168.2.24:88/api/dataController/updateSignByid.do?",
-                  data
-                )
+            if (signData.data.user_type == 3) {
+              self.$api
+                .updateSignByid(data)
                 .then((res) => {
-                  if (res.code == 0) {
-                    self.$message.success(res.data.msg);
-                  } else {
-                    self.$message.error(res.data.msg);
-                  }
+                  self.$message.success(res.msg);
+                  self.$router.push({ path: "/signLogin" });
+                })
+                .catch((res) => {
+                  self.$message.error(res.msg);
                   self.$router.push({ path: "/signLogin" });
                 });
             }
-            if (signData.data.data.user_type == 2) {
-              self.$axios
-                .post(
-                  "http://192.168.2.24:88/api/dataController/updateDocSignByid.do?",
-                  data
-                )
+            if (signData.data.user_type == 2) {
+              self.$api
+                .updateDocSignByid(data)
                 .then((res) => {
-                  if (res.data.code == 0) {
-                    let data_ = {
-                      ycgl_key: md5_,
-                      deanid: 3,
-                      userId: signData.data.data1.doctor_id, //用户ID
-                      name: signData.data.data1.doctor_nickname, //姓名
-                      idcard: signData.data.data1.doctor_idcard, //身份证号
-                    };
-                    let data = self.$qs.stringify(data_);
-                    self.$axios
-                      .post(
-                        "http://192.168.2.24:88/api/esign/addPersonalAcct.do?",
-                        data
-                      )
-                      .then((res) => {
-                        if (res.data.code == 0) {
-                          self.$message.success(res.msg);
-                          self.$router.push({ path: "/signLogin" });
-                        }
-                      });
-                  } else {
-                    self.$message.error(res.msg);
-                  }
+                  // if (res.code == 0) {
+                  // let data = {
+                  //   userId: signData.data1.doctor_id, //用户ID
+                  //   name: signData.data1.doctor_nickname, //姓名
+                  //   idcard: signData.data1.doctor_idcard, //身份证号
+                  //   deanid: signData.data1.doctor_deanid,
+                  // };
+                  // self.$api.electroniCseal(data).then((res) => {
+                  //   self.$message.success(res.msg);
+                  //   self.$router.push({ path: "/signLogin" });
+                  // });
+                  self.$message.success(res.msg);
+                  self.$router.push({ path: "/signLogin" });
+                  // }
+                })
+                .catch((res) => {
+                  self.$message.error(res.msg);
+                  self.$router.push({ path: "/signLogin" });
                 });
             }
           }

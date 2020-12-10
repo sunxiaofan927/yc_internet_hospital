@@ -164,12 +164,12 @@
                         title: '药店管理',
                         key:this.json.title_menu5 
                     },
-                    {
-                        icon: 'el-icon-user-solid',
-                        index: 'pharmacist',
-                        title: '药师管理',
-                        key:this.json.title_menu18
-                    },
+                    // {
+                    //     icon: 'el-icon-user-solid',
+                    //     index: 'pharmacist',
+                    //     title: '药师管理',
+                    //     key:this.json.title_menu18
+                    // },
                     {
                         icon: 'el-icon-s-platform',
                         index: 'drug',
@@ -206,12 +206,13 @@
                         title: '医师管理',
                         key:this.json.title_menu8
                     },
+                    // {
+                    //     icon: 'el-icon-copy-document',
+                    //     index: 'quality',
+                    //     title: '处方管理',
+                    //     key:this.json.title_menu9 
+                    // },
                     {
-                        icon: 'el-icon-copy-document',
-                        index: 'quality',
-                        title: '处方管理',
-                        key:this.json.title_menu9 
-                    },{
                         icon: 'el-icon-aim',
                         index: 'BasicData',
                         title: '协议管理',
@@ -233,6 +234,12 @@
                         index: 'banner',
                         title: 'banner管理',
                         key:this.json.title_menu15 
+                    },
+                    {
+                        icon: 'el-icon-place',
+                        index: 'adminUser',
+                        title: '用户管理',
+                        key: 1 
                     },
                     {
                         icon: 'el-icon-place',

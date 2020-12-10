@@ -64,7 +64,7 @@
             </div>
             <div class="Index_flex_">
               <span class="title"><i>*</i>账户状态</span>
-              <el-select v-model="form.pharmacist_status" placeholder="请选择">
+              <el-select v-model="form.user_status" placeholder="请选择">
                 <el-option
                   v-for="item in optionsStatus"
                   :key="item.value"
@@ -132,7 +132,8 @@
           </div>
         </div>
       </div>
-      <div class="Index_flex_2" v-if="pharmacist_status == 3">
+      <!-- <div class="Index_flex_2" v-if="pharmacist_status == 3"> --> 
+        <!-- <div class="Index_flex_2" v-if="user_status == 3"> -->
         <span class="title alitemSpan"
           ><h4><i style="color: red">*</i>驳回原因</h4></span
         >
@@ -144,7 +145,7 @@
           v-model="form.pharmacist_reason"
         >
         </el-input>
-      </div>
+      <!-- </div> -->
       <div class="Index_flex_2">
         <span><i style="color: red">*</i>身份证(正反面[共2张])</span>
       </div>
@@ -286,7 +287,8 @@ export default {
         pharmacist_hospital: "", //现任机构名称
         type: "", //提交权限
         p_type: "", //药师类型
-        pharmacist_status: "", //是否可以正常使用
+        // pharmacist_status: "2", //是否可以正常使用
+        user_status: "",
         user_account: "", //手机号
         pharmacist_idcard_url1: "", //身份证正面照片url
         pharmacist_idcard_url2: "", //身份证反面照片url
@@ -393,11 +395,12 @@ export default {
       this.$api.pInfo(data).then((res) => {
         this.form = res.data;
         this.imgFun(res.data);
-        console.log();
       });
     },
     submit() {
       let data = this.form;
+      data.pharmacist_status = 2;
+      console.log(data)
       let TEL_REGEXP = /^1([38]\d|5[0-35-9]|7[3678])\d{8}$/;
       if (
         data.user_account == "" ||
@@ -411,14 +414,14 @@ export default {
         this.$message("手机号有误");
         return false;
       }
-      if (
-        data.pharmacist_status == "" ||
-        data.pharmacist_status == undefined ||
-        data.pharmacist_status == null
-      ) {
-        this.$message("账户状态为空,请选择");
-        return false;
-      }
+      // if (
+      //   data.pharmacist_status == "" ||console.log(data)
+      //   data.pharmacist_status == undefined ||
+      //   data.pharmacist_status == null
+      // ) {
+      //   this.$message("账户状态为空,请选择");
+      //   return false;
+      // }
       let test = /^[1-9]\d{5}[1-9]\d{3}((0[1-9])|(1[0-2]))((0[1-9])|([1-2]\d)|(3[0-1]))((\d{4})|(\d{3}[Xx]))$/;
       if (!test.test(data.pharmacist_idcard)) {
         this.$message("身份证号有误");
@@ -478,32 +481,43 @@ export default {
         // 添加  或者  修改
         .then((res) => {
           // if(this.typeClick=='1'){
-          let data = {
-            type: "9",
+          let ID = this.$store.state.ID;
+          let data_ = {
+            type: data.type,
+            // mid: ID.userid,
             // sxsealData: this.form.sxsealData,
             mobile: this.form.user_account,
           };
-          this.$api.pManage(data).then((res) => {
-            if (this.typeClick == 1) {
+          if (data.type == 4) {
+              data_.mid = ID.userid;
+          }
+          this.$api.pManage(data_).then((res) => {
+            if (data.type == 9 && this.typeClick == 1) {
               this.addPersonalAcct(res.data[0]);
-            } else if (this.typeClick == 0){
+            } else if (
+              (data.type == 9 && this.typeClick == 0) ||
+              data.type == 4
+            ) {
+              this.$message.success("医师添加成功")
               setTimeout(() => {
                 this.$router.push("/pharmacist");
               }, 1000);
             }
           });
-        });
+        })
     },
     addPersonalAcct(val) {
+      // let deanid = Base64.decode(sessionStorage.getItem(Base64.encode('go')));
       let data = {
         userId: val.pharmacist_id,
         name: val.pharmacist_nickname,
         idcard: val.pharmacist_idcard,
+        // deanid : deanid
       };
       this.$api
         .addPersonalAcct(data)
         .then(() => {
-          this.$message.success("请将签名二维码发送至药师,进行手签");
+          this.$message.success("药师添加成功")
           setTimeout(() => {
             this.$router.push("/pharmacist");
           }, 1000);

@@ -117,7 +117,8 @@
           </div>
         </div>
       </div>
-      <div class="reason" v-if="form.pharmacist_reason">
+      <!-- <div class="reason" v-if="form.pharmacist_reason"> -->
+      <div class="reason" v-if="form.pharmacist_status == 3">
         <span class="reject_span"><i style="color: red">*</i>驳回原因</span>
         <el-input
           v-model="form.pharmacist_reason"
@@ -145,7 +146,6 @@
           @click="imgL(form.pharmacist_idcard_url2)"
         />
       </div>
-
       <div class="Index_flex_2">
         <h4>
           <span><i style="color: red">*</i>医师资格证书</span>
@@ -189,7 +189,7 @@
           @click="imgL(form.pharmacist_qualification_url6)"
         />
       </div>
-      <div class="div_" v-if="form.pharmacist_status != 1">
+      <div class="div_" v-if="form.pharmacist_status == 2">
         <el-button type="primary" class="btn_save" @click="confirm"
           >审核通过</el-button
         >
@@ -306,11 +306,37 @@ export default {
     },
     confirm() {
       //提交审核
+      let pid = sessionStorage.getItem("pharmacistsID");
       let status = this.form.pharmacist_status;
       if (this.form.pharmacist_status == "3") {
         status = "2";
       }
+      // let data = {
+      //   // pid:pid,
+      //   user_account: this.form.pharmacist_mobile,
+      //   user_pswd: this.form.user_pswd,
+      //   user_status: this.form.user_status,
+      //   pharmacist_icon: this.form.pharmacist_icon,
+      //   pharmacist_nickname: this.form.pharmacist_nickname,
+      //   pharmacist_gender: this.form.pharmacist_gender,
+      //   pharmacist_idcard: this.form.pharmacist_idcard,
+      //   pharmacist_hospital: this.form.pharmacist_hospital,
+      //   pharmacist_title: this.form.title_name,
+      //   pharmacist_idcard_url1: this.form.pharmacist_qualification_url1,
+      //   pharmacist_idcard_url2: this.form.pharmacist_qualification_url1,
+      //   pharmacist_qualification_url1: this.form.pharmacist_qualification_url1,
+      //   pharmacist_qualification_url2: this.form.pharmacist_qualification_url2,
+      //   pharmacist_qualification_url3: this.form.pharmacist_qualification_url3,
+      //   pharmacist_qualification_url4: this.form.pharmacist_qualification_url4,
+      //   pharmacist_qualification_url5: this.form.pharmacist_qualification_url5,
+      //   pharmacist_qualification_url6: this.form.pharmacist_qualification_url6,
+      //   pharmacist_status: status,
+      //   // pharmacist_id: this.form.id,
+      //   pid: pid,
+      //   type: this.$store.state.login.user_type,
+      // };
       let data = {
+        // pid:pid,
         user_account: this.form.pharmacist_mobile,
         user_pswd: this.form.user_pswd,
         user_status: this.form.user_status,
@@ -329,27 +355,34 @@ export default {
         pharmacist_qualification_url5: this.form.pharmacist_qualification_url5,
         pharmacist_qualification_url6: this.form.pharmacist_qualification_url6,
         pharmacist_status: status,
-        pharmacist_id: this.form.id,
-        type: this.$store.state.login.user_type,
+        // pharmacist_id: this.form.id,
+        pid: pid,
+        type: 1,
       };
       let TEL_REGEXP = /^1([38]\d|5[0-35-9]|7[3678])\d{8}$/;
       if (!TEL_REGEXP.test(data.user_account)) {
         this.$message("手机号有误");
         return false;
       }
-      this.$api.pManageup(data).then(() => {
-        // console.log(data)
+      // this.$api.pManageup(data).then(() => {
+      //   // console.log(data)
+      //   this.addPersonalAcct(data);
+      // });
+      this.$api.pStatusManageup(data).then(() => {
         this.addPersonalAcct(data);
       });
     },
     addPersonalAcct(val) {
+      let pid = sessionStorage.getItem("pharmacistsID");
       let data = {
-        userId: val.pharmacist_id,
+        userId: pid,
         name: val.pharmacist_nickname,
         idcard: val.pharmacist_idcard,
         sxsealData: val.sxsealData,
       };
-      this.$api.addPersonalAcct(data);
+      this.$api.addPersonalAcct(data).then((res) => {
+        this.$router.go(-1);
+      });
     },
     confirm2() {
       let data = {
@@ -443,7 +476,7 @@ div {
   overflow: hidden;
 }
 .avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
 }
 .avatar-uploader-icon {
   font-size: 28px;

@@ -132,9 +132,9 @@
                 {{
                   scope.row[col.prop] == "1"
                     ? "有效（未过期）"
-                    : scope.row[col.prop] == "1"
+                    : scope.row[col.prop] == "2"
                     ? "无效（已过期）"
-                    : "未审核"
+                    : ""
                 }}
               </span>
               <span v-else-if="col.prop === 'p_state'">
@@ -340,7 +340,7 @@
               />
             </div>
           </div>
-          <div class="sealContainer" >
+          <div class="sealContainer">
             <span>医师签章:</span>
             <div class="sealList">
               <!-- <img
@@ -429,8 +429,8 @@
         slot="footer"
         class="dialog-footer"
         v-show="
-          (this.userType == 1 && !this.isImage) ||
-          (this.userType == 2 && !this.R_Image)
+          (this.userType == 1 && !this.isImage && this.btnShow != 2) ||
+          (this.userType == 2 && !this.R_Image && this.btnShow != 2)  
         "
       >
         <el-button @click="reject1">驳回</el-button>
@@ -497,16 +497,17 @@ export default {
       cols1: [
         { prop: "p_number", label: "处方号", width: "300" },
         { prop: "user_mobile", label: "手机号" },
-        { prop: "p_uptime", label: "审核通过时间" },
+        { prop: "p_uptime", label: "审核通过时间", width: "150" },
         { prop: "p_price", label: "处方价格" },
         { prop: "p_state", label: "审核状态" },
         { prop: "user_nickname", label: "患者" },
         { prop: "doctor_nickname", label: "开方医师" },
         { prop: "p_instime", label: "审核时间" },
-        { prop: "pharmacist_nickname", label: "审核医生" },
+        { prop: "p_r_nickname", label: "审核药师" },
         { prop: "p_type", label: "类型" },
         { prop: "p_timestatus", label: "处方是否过期" },
       ],
+      btnShow: "",
       tableData: [],
       activeName: "first",
       title: "添加",
@@ -640,9 +641,19 @@ export default {
         reason: this.rejectReason, //驳回原因
         // p_reason: this.rejectReason, //驳回原因
       };
+      if (this.userType == 2) {
+        data = {
+          p_number: this.formJSON.p_number, //处方号
+          rid: this.$store.state.login.userid, //药师唯一id
+          type: "2", //type
+          reason: this.rejectReason, //驳回原因
+          // p_reason: this.rejectReason, //驳回原因
+        };
+      }
       this.$api.pnStatusManageup(data).then((res) => {
         this.dialogFormVisible = false;
         this.dialogFormVisible3 = false;
+        this.$message.success(res.msg);
         this.axios2();
       });
     },
@@ -665,6 +676,7 @@ export default {
             .then((res) => {
               this.dialogFormVisible = false;
               // this.SendPrescription();
+              this.$message.success(res.msg);
               this.axios2(1);
             });
         });
@@ -684,6 +696,7 @@ export default {
             .then((res) => {
               this.dialogFormVisible = false;
               // this.SendPrescription();
+              this.$message.success(res.msg);
               this.axios2(1);
             });
         });
@@ -697,6 +710,7 @@ export default {
     // },
     axios3(val) {
       //处方详情
+
       this.parm = val.p_state;
       this.p_number = val.p_number;
       this.formJSON = val;
@@ -715,6 +729,7 @@ export default {
       // }
       this.$api.userPrescriptionInfo(data).then((res) => {
         if (res.code == 0) {
+          this.btnShow = res.data.prescriptionManageBean.p_state;
           let p_state = res.data.prescriptionManageBean.p_state;
           if (p_state == 1) {
             this.R_Image = true;
@@ -783,15 +798,18 @@ export default {
       } else if (this.userType == 2) {
         data.rid = this.$store.state.ID.userid;
       }
-      this.$api.tmpcnManage(data).then((res) => {
+      this.$api
+        .tmpcnManage(data)
+        .then((res) => {
           this.tableData = res.data.list;
           this.total = res.data.total;
-      }).catch(res =>{
-        if (res.data.code!=0) {
-          // this.$message.error(res.data.msg)
-          this.tableData = [];
-        }
-      });
+        })
+        .catch((res) => {
+          if (res.data.code != 0) {
+            // this.$message.error(res.data.msg)
+            this.tableData = [];
+          }
+        });
     },
     search() {
       let value_ = this.value_;

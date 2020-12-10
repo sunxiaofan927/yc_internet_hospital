@@ -62,7 +62,8 @@ import Qs from 'qs';
           user_type:'',
           disabled_:false,
           api:'/api',//本地
-        //   api:'https://api.ycyun120.com:1443',//线上
+          // api:'https://api.ycyun120.com/',//线上
+          // api:'http://192.168.2.22:8080/yc_internet_hospital_api',
       }
     },methods: {
         submit(){
@@ -88,21 +89,25 @@ import Qs from 'qs';
                 .then(res => {
                   // console.log(res.data.user_type)
                     if(res.code=='0'){
-                      
                         this.$store.dispatch("login",res.data);
                         sessionStorage.setItem('user_type',res.pharmacist_type);
                         this.user_type = res.data.user_type;
                         this.$store.dispatch("ID_",{user_deanid:res.data.user_deanid,userid:res.data.userid});
                         sessionStorage.setItem(Base64.encode('go'),Base64.encode(res.data.user_deanid))
+                        // sessionStorage.setItem("deanid",res.data.user_deanid)
                         this.$store.dispatch("updateCheck",res.data.user_deanid);
                         this.$store.dispatch("token",res.data.access_token);
                         // console.log(this.$store.commit.token)
                         sessionStorage.setItem("qrcodePhone",res.data.access_token)
                         this.others(res.data.access_token,res.data.user_deanid,res.data.user_type);
                         this.TimeOut();
-                        if(res.data.userid=="3"){
+                        // if(res.data.userid=="3"){  //本地
+                        //     this.checkIn(res.data.user_deanid,res.data.access_token);
+                        // }
+                        if(res.data.userid=="1"){  //线上
                             this.checkIn(res.data.user_deanid,res.data.access_token);
                         }
+                        // this.user_type = 10;
                     }
                 })
                 .catch((response) => {
@@ -130,13 +135,17 @@ import Qs from 'qs';
                         this.$router.push('/');//院长
                     break;
                     case '4':
-                         this.$router.push('/quality');//机构
+                        //  this.$router.push('/pharmacist');//机构
+                        this.$router.push('/adminUser');
                     break;
                     case '3':
                          this.$router.push('/recipe');//药师
                     break;
                     case '2':
                          this.$router.push('/informatization');//医师
+                    break;
+                    case '10':
+                         this.$router.push('/adminUser'); //安全管理员
                     break;
                     case '1':
                          this.$toast("该账号不存在");
@@ -154,7 +163,10 @@ import Qs from 'qs';
                 idcard:"110108197608275410",
             };
             this.$axios.defaults.headers.common['access-token'] = token ;
-            this.$axios.post(api+"/esign/addPersonalAcct.do?",Qs.stringify(data))
+            // this.$axios.post(api+"/esign/addPersonalAcct.do?",Qs.stringify(data))
+            this.$api.addPersonalAcct(data).then(res =>{
+              console.log(res)
+            })
         },
         others(token,deanid,type){
             let api = this.api;

@@ -1,6 +1,12 @@
 <template>
   <div class="app">
-    <div class="Index_app-box">
+    <div
+      class="Index_app-box"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+    >
       <div class="Index_flex_box">
         <div class="flex-1">
           <div class="photo Index_flex_">
@@ -29,7 +35,6 @@
               <span class="title"><i>*</i>手机号</span>
               <el-input
                 v-model="form.phone"
-                type="number"
                 placeholder="请输入内容"
               ></el-input>
             </div>
@@ -631,6 +636,7 @@ import qrCode from "./qrcode";
 export default {
   data() {
     return {
+      loading:false,
       dialogVisiblehuizhi: false,
       options: [
         {
@@ -1042,6 +1048,7 @@ export default {
     submit(photo) {
       //提交审核
       this.examine(photo);
+      console.log(this.examine(photo))
       let data = this.iframe;
       data.doc_multi_sited_date_start = this.dataTimeDu[0];
       data.doc_multi_sited_date_end = this.dataTimeDu[1];
@@ -1055,18 +1062,23 @@ export default {
         this.$message("身份证号有误");
         return false;
       }
-      // if (!data.sxsealData) {
-      //   this.$message("签名不能为空");
-      //   return false;
-      // }
+      this.loading = true;
       this.$api.doctorManageIns2(data).then((res) => {
-        this.addPersonalAcct(data).then((res) => {
-          setTimeout(() => {
-            this.$router.push({
-              path: "/informatization",
-            });
-          }, 1000);
-        });
+        // this.addPersonalAcct(data).then((res) => {
+        //   setTimeout(() => {
+        //     this.$router.push({
+        //       path: "/informatization",
+        //     });
+        //   }, 1000);
+        // });
+        
+        // if(res.code == 0) {
+          this.loading = false;
+          this.$message.success(res.message);
+          this.$router.push({ path: "/informatization" });
+        // }
+      }).catch(res =>{
+        this.loading = false;
       });
     },
     addPersonalAcct(val) {
@@ -1076,7 +1088,10 @@ export default {
       };
       this.$api.doctorManage(data2).then((res) => {
         docid = res.data[0].doctor_id;
+        let deanid = Base64.decode(sessionStorage.getItem(Base64.encode("go")));
+        console.log(deanid);
         let data = {
+          deanid: deanid,
           userId: docid,
           name: val.nickname,
           idcard: val.idcard,

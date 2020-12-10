@@ -1001,11 +1001,13 @@
           })
       },
       addPersonalAcct(val){
+        // let deanid = Base64.decode(sessionStorage.getItem(Base64.encode('go')));
         let data = {
           userId:val.docid,
           name:val.nickname,
           idcard:val.idcard,
-          sxsealData:val.sxsealData
+          sxsealData:val.sxsealData,
+          // deanid : deanid,
         };
         this.$api.addPersonalAcct(data)
       },

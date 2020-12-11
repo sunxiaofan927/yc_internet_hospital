@@ -47,7 +47,7 @@ Vue.config.productionTip = false
 //路由拦截
 router.beforeEach((to, from, next) => {
   const isLogin = sessionStorage.getItem(Base64.encode("login"));
-  if (!isLogin && to.path !== '/login' && to.path !== '/signPhone' && to.path !== '/signLogin') {//无登录状态 并且切换到其他路由
+  if (!isLogin && to.path !== '/login' && to.path !== '/signPhone' && to.path !== '/signLogin' && to.path !== 'adminUser') {//无登录状态 并且切换到其他路由
       if (to.path !== '/login') {
           next('/login');
       }else {

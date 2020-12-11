@@ -244,7 +244,7 @@ export default new Router({
           }, //signPhone
           {
             path: '/adminUser',
-            component: resolve => require(['@/navigation/admin/safety/user'], resolve),
+            component: resolve => require(['@/navigation/admin/safety/loginCheck'], resolve),
           }
       ]
     },

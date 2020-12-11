@@ -87,7 +87,6 @@ import Qs from 'qs';
             }
              this.$api.login(data)//登录
                 .then(res => {
-                  // console.log(res.data.user_type)
                     if(res.code=='0'){
                         this.$store.dispatch("login",res.data);
                         sessionStorage.setItem('user_type',res.pharmacist_type);
@@ -101,13 +100,12 @@ import Qs from 'qs';
                         sessionStorage.setItem("qrcodePhone",res.data.access_token)
                         this.others(res.data.access_token,res.data.user_deanid,res.data.user_type);
                         this.TimeOut();
-                        // if(res.data.userid=="3"){  //本地
-                        //     this.checkIn(res.data.user_deanid,res.data.access_token);
-                        // }
-                        if(res.data.userid=="1"){  //线上
+                        if(res.data.userid=="3"){  //本地
                             this.checkIn(res.data.user_deanid,res.data.access_token);
                         }
-                        // this.user_type = 10;
+                        // if(res.data.userid=="1"){  //线上
+                        //     this.checkIn(res.data.user_deanid,res.data.access_token);
+                        // }
                     }
                 })
                 .catch((response) => {
@@ -135,8 +133,8 @@ import Qs from 'qs';
                         this.$router.push('/');//院长
                     break;
                     case '4':
-                        //  this.$router.push('/pharmacist');//机构
-                        this.$router.push('/adminUser');
+                         this.$router.push('/pharmacist');//机构
+                        // this.$router.push('/adminUser');
                     break;
                     case '3':
                          this.$router.push('/recipe');//药师
@@ -162,8 +160,14 @@ import Qs from 'qs';
                 name:"怡成互联网医院",
                 idcard:"110108197608275410",
             };
+            // let data = {
+            //     deanid:"1",
+            //     userId:"1",
+            //     ycgl_key:md5_,
+            //     name:"怡成互联网医院",
+            //     idcard:"110108197608275410",
+            // };
             this.$axios.defaults.headers.common['access-token'] = token ;
-            // this.$axios.post(api+"/esign/addPersonalAcct.do?",Qs.stringify(data))
             this.$api.addPersonalAcct(data).then(res =>{
               console.log(res)
             })
